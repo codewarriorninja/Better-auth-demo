@@ -11,7 +11,7 @@ import { useState } from "react"
 const LoginForm = () => {
   const [isPending, setIsPending] = useState(false);
 
-  const router = useRouter()
+  const router = useRouter();
 
     const handleSubmit = async(evt: React.FormEvent<HTMLFormElement>) => {
       evt.preventDefault();
@@ -34,6 +34,7 @@ const LoginForm = () => {
           setIsPending(false);
         },
         onError:(ctx) => {
+            
             toast.error(ctx.error.message)
         },
         onSuccess:() => {
