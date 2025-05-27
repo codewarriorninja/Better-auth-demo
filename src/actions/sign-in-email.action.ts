@@ -1,6 +1,7 @@
 'use server'
 
 import { auth } from "@/lib/auth";
+import { APIError } from "better-auth/api";
 // import { parseSetCookieHeader } from "better-auth/cookies"; //we used this for setup cookie manualy
 import { headers } from "next/headers";
 
@@ -45,9 +46,9 @@ export const signInEmailAction = async(formdata:FormData) => {
 
      return {error:null}
     } catch (error) {
-      if(error instanceof Error){
-        return {error: 'Something went wrong'}
-      }  
+      if(error instanceof APIError){
+        return {error:error.message}
+      }
       return {error:'Internal server error'}
     }
 }
