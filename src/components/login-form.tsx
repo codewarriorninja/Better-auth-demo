@@ -4,9 +4,10 @@ import { toast } from "sonner"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
-import { signIn } from "@/lib/auth-client"
+// import { signIn } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { signInEmailAction } from "@/actions/sign-in-email.action"
 
 const LoginForm = () => {
   const [isPending, setIsPending] = useState(false);
@@ -17,31 +18,43 @@ const LoginForm = () => {
       evt.preventDefault();
 
       const formData = new FormData(evt.target as HTMLFormElement);
-
-      const email = String(formData.get('email'));
-      if(!email) return toast.error('Please enter your email');
-      const password = String(formData.get('password'));
-      if(!password) return toast.error('Please enter your password');
-      
-      await signIn.email({
-        email,
-        password
-      },{
-        onRequest: () => {
-          setIsPending(true);
-        },
-        onResponse:() => {
+  
+        setIsPending(true)
+  
+        const {error} = await signInEmailAction(formData);
+  
+        if(error){
+          toast.error(error);
           setIsPending(false);
-        },
-        onError:(ctx) => {
-            
-            toast.error(ctx.error.message)
-        },
-        onSuccess:() => {
-          router.push('/profile');
-          toast.success('User logged In successfully')
+        }else{
+          router.push('/profile')
+          toast.success('Login successful')
         }
-      })
+
+      // const email = String(formData.get('email'));
+      // if(!email) return toast.error('Please enter your email');
+      // const password = String(formData.get('password'));
+      // if(!password) return toast.error('Please enter your password');
+      
+      // await signIn.email({
+      //   email,
+      //   password
+      // },{
+      //   onRequest: () => {
+      //     setIsPending(true);
+      //   },
+      //   onResponse:() => {
+      //     setIsPending(false);
+      //   },
+      //   onError:(ctx) => {
+            
+      //       toast.error(ctx.error.message)
+      //   },
+      //   onSuccess:() => {
+      //     router.push('/profile');
+      //     toast.success('User logged In successfully')
+      //   }
+      // })
     }
 
   return (

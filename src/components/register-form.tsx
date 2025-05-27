@@ -4,9 +4,10 @@ import { toast } from "sonner"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
-import { signUp } from "@/lib/auth-client"
+// import { signUp } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { signUpEmailAction } from "@/actions/sign-up-email.action"
 
 const RegisterForm = () => {
   const [isPending, setIsPending] = useState(false);
@@ -16,34 +17,44 @@ const RegisterForm = () => {
     const handleSubmit = async(evt: React.FormEvent<HTMLFormElement>) => {
       evt.preventDefault();
 
+      setIsPending(true)
       const formData = new FormData(evt.target as HTMLFormElement);
 
-      const name = String(formData.get('name'));
-      if(!name) return toast.error('Please enter your name');
-      const email = String(formData.get('email'));
-      if(!email) return toast.error('Please enter your email');
-      const password = String(formData.get('password'));
-      if(!password) return toast.error('Please enter your password');
+      const {error} = await signUpEmailAction(formData);
 
-      await signUp.email({
-        name,
-        email,
-        password
-      },{
-        onRequest: () => {
-          setIsPending(true);
-        },
-        onResponse:() => {
-          setIsPending(false);
-        },
-        onError:(ctx) => {
-            toast.error(ctx.error.message)
-        },
-        onSuccess:() => {
-            router.push('/auth/login')
-            toast.success('User registered successfully')
-        }
-      })
+      if(error){
+        toast.error(error);
+        setIsPending(false);
+      }else{
+        router.push('/auth/login')
+        toast.success('User registered successfully')
+      }
+      // const name = String(formData.get('name'));
+      // if(!name) return toast.error('Please enter your name');
+      // const email = String(formData.get('email'));
+      // if(!email) return toast.error('Please enter your email');
+      // const password = String(formData.get('password'));
+      // if(!password) return toast.error('Please enter your password');
+
+      // await signUp.email({
+      //   name,
+      //   email,
+      //   password
+      // },{
+      //   onRequest: () => {
+      //     setIsPending(true);
+      //   },
+      //   onResponse:() => {
+      //     setIsPending(false);
+      //   },
+      //   onError:(ctx) => {
+      //       toast.error(ctx.error.message)
+      //   },
+      //   onSuccess:() => {
+      //       router.push('/auth/login')
+      //       toast.success('User registered successfully')
+      //   }
+      // })
     }
 
   return (
