@@ -13,7 +13,6 @@ export const signInEmailAction = async(formdata:FormData) => {
     if(!password) return {error:'Please enter your password'}
 
     try {
-     
       await auth.api.signInEmail({
       headers:await headers(),
         body:{
