@@ -1,7 +1,9 @@
 import ReturnButton from '@/components/return-button';
 import SignOutButton from '@/components/sign-out-button';
+import { Button } from '@/components/ui/button';
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 const Profile = async() => {
@@ -17,7 +19,14 @@ const Profile = async() => {
         <ReturnButton href='/' label='Home'/>
         <h1 className='text-3xl font-bold'>Profile</h1>
       </div>
-      <SignOutButton />
+      <div className='flex items-center gap-2'>
+        {session.user.role === 'ADMIN' && (
+          <Button size='sm' asChild>
+            <Link href={'/admin/dashboard'}>Admin Dashboard</Link>
+          </Button>
+        )}
+       <SignOutButton />
+      </div>
       
       <pre className='text-sm overflow-hidden'>
         <code>{JSON.stringify(session, null, 2)}</code>
