@@ -1,11 +1,13 @@
 import {betterAuth} from 'better-auth'
 import {prismaAdapter} from 'better-auth/adapters/prisma'
 import { nextCookies } from 'better-auth/next-js';
+import { admin } from 'better-auth/plugins';
 
 import {prisma} from '@/lib/prisma';
 import { hashPassword, verifyPassword } from './argon2';
 import { createAuthMiddleware,APIError, } from 'better-auth/api';
 import { normalizeName, VALID_DOMAIN } from './utils';
+import { UserRole } from '@/generated/prisma';
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -46,10 +48,24 @@ export const auth = betterAuth({
             }
         })
     },
+    databaseHooks:{
+        user:{
+            create:{
+                before:async (user) => {
+                  const ADMIN_EMAILS = process.env.ADMIN_EMAILS?.split(';') || [];
+                   
+                  if(ADMIN_EMAILS.includes(user.email)){
+                    return {data: {...user, role:UserRole.ADMIN}}
+                  }
+                  return {data:user}
+                }
+            }
+        }
+    },
     user:{
         additionalFields:{
             role:{
-                type:['USER','ADMIN'],
+                type:['USER','ADMIN'] as Array<UserRole>,
                 input:false
             }
         }
@@ -62,7 +78,13 @@ export const auth = betterAuth({
             generateId:false,
         },
     },
-    plugins:[nextCookies()],
+    plugins:[
+        nextCookies(),
+        admin ({
+            defaultRole:UserRole.USER, //User
+            adminRoles:[UserRole.ADMIN] //admin
+        })
+    ],
 });
 
 export type ErrorCode = keyof typeof auth.$ERROR_CODES | 'unknown'
