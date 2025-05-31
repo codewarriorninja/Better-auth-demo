@@ -1,6 +1,8 @@
 import DeleteButton, { PlaceHolderDeleteUserButton } from '@/components/delete-user-button'
 import ReturnButton from '@/components/return-button'
 import { Table, TableHeader,TableHead, TableRow, TableBody, TableCell } from '@/components/ui/table'
+import UserRoleSelect from '@/components/user-role-select'
+import { UserRole } from '@/generated/prisma'
 import { auth } from '@/lib/auth'
 // import { prisma } from '@/lib/prisma'
 import { headers } from 'next/headers'
@@ -73,7 +75,9 @@ return (
                         <TableCell className='p-2'>{user.id.slice(0,8)}</TableCell>
                         <TableCell className='p-2'>{user.name}</TableCell>
                         <TableCell className='p-2'>{user.email}</TableCell>
-                        <TableCell className='p-2'>{user.role}</TableCell>
+                        <TableCell className='p-2'>
+                            <UserRoleSelect userId={user.id} role={user.role as UserRole}  />
+                        </TableCell>
                         <TableCell className='p-2'>
                             {user.role === 'USER' ? (
                                 <DeleteButton userId={user.id}/>
