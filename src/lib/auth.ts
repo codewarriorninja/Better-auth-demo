@@ -8,6 +8,7 @@ import { hashPassword, verifyPassword } from './argon2';
 import { createAuthMiddleware,APIError, } from 'better-auth/api';
 import { normalizeName, VALID_DOMAIN } from './utils';
 import { UserRole } from '@/generated/prisma';
+import {roles,ac} from '@/lib/permission'
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -82,7 +83,9 @@ export const auth = betterAuth({
         nextCookies(),
         admin ({
             defaultRole:UserRole.USER, //User
-            adminRoles:[UserRole.ADMIN] //admin
+            adminRoles:[UserRole.ADMIN], //admin
+            ac,
+            roles,
         })
     ],
 });

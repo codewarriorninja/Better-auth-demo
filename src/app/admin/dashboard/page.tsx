@@ -2,7 +2,7 @@ import DeleteButton, { PlaceHolderDeleteUserButton } from '@/components/delete-u
 import ReturnButton from '@/components/return-button'
 import { Table, TableHeader,TableHead, TableRow, TableBody, TableCell } from '@/components/ui/table'
 import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+// import { prisma } from '@/lib/prisma'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
@@ -15,7 +15,7 @@ const AdminPage = async() => {
     if(!session) redirect('/auth/login');
 
     if(session.user.role !== 'ADMIN') {
-  return (
+    return (
     <div className='px-8 py-16 container mx-auto max-w-screen-lg space-y-8'>
         <div className='space-y-8'>
             <ReturnButton href='/profile' label='profile'/>
@@ -26,11 +26,27 @@ const AdminPage = async() => {
   )
 }
 
-const users = await prisma.user.findMany({
-    orderBy:{
-        name:'asc'
+// const users = await prisma.user.findMany({
+//     orderBy:{
+//         name:'asc'
+//     }
+// });
+
+
+//better auth api
+const {users} = await auth.api.listUsers({
+    headers:await headers(),
+    query:{
+        sortBy: 'name'
     }
 });
+
+const sortedUsers = users.sort((a,b) => {
+    if(a.role === 'ADMIN' && b.role !== 'ADMIN') return -1;
+    if(a.role !== 'ADMIN' && b.role === 'ADMIN') return 1;
+    return 0;
+})
+
 
 return (
     <div className='px-8 py-16 container mx-auto max-w-screen-lg space-y-8'>
@@ -52,7 +68,7 @@ return (
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {users.map((user) => (
+                {sortedUsers.map((user) => (
                     <TableRow key={user.id} className='border-b text-sm text-left'>
                         <TableCell className='p-2'>{user.id.slice(0,8)}</TableCell>
                         <TableCell className='p-2'>{user.name}</TableCell>
