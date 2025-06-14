@@ -14,6 +14,16 @@ export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider:'postgresql'
     }),
+    socialProviders:{
+        google:{
+            clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string,
+            clientSecret: process.env.NEXT_SECRET_GOOGLE_CLIENT_SECRET as string,
+        },
+        github:{
+            clientId: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID as string,
+            clientSecret: process.env.NEXT_SECRET_GITHUB_CLIENT_SECRET as string
+        }
+    },
     emailAndPassword:{
         enabled:true,
         minPasswordLength:6,
