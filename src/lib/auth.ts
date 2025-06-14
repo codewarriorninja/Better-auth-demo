@@ -3,12 +3,12 @@ import {prismaAdapter} from 'better-auth/adapters/prisma'
 import { nextCookies } from 'better-auth/next-js';
 import { admin } from 'better-auth/plugins';
 
-import {prisma} from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { hashPassword, verifyPassword } from './argon2';
 import { createAuthMiddleware,APIError, } from 'better-auth/api';
 import { normalizeName, VALID_DOMAIN } from './utils';
 import { UserRole } from '@/generated/prisma';
-import {roles,ac} from '@/lib/permission'
+import { roles,ac } from '@/lib/permission'
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -83,6 +83,11 @@ export const auth = betterAuth({
     },
     session: {
         expiresIn: 30 * 24 * 60 * 60, //30 days,
+    },
+    account:{
+        accountLinking:{
+            enabled:false,
+        }
     },
     advanced: {
         database: {
